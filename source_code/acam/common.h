@@ -1,3 +1,5 @@
+#pragma once
+
 #include <mmdeviceapi.h>
 #include <mmsystem.h>
 #define SECOND_FRACTIONS_TO_GRAB 16
@@ -11,7 +13,7 @@ void ShowOutput(const char *str, ...);
 HRESULT set_config_string_setting(LPCTSTR szValueName, wchar_t *szToThis );
 
 int getHtzRate(HRESULT *hr);
-int getBitsPerSample();
+//int getBitsPerSample();
 int getChannels();
 
 HRESULT LoopbackCaptureTakeFromBuffer(BYTE pBuf[], int iSize, WAVEFORMATEX* ifNotNullThenJustSetTypeOnly, LONG* sizeWrote);

@@ -147,6 +147,7 @@ HRESULT LoopbackCaptureSetup()
     if (FAILED(hr)) {
         ShowOutput("IAudioClient::GetDevicePeriod failed: hr = 0x%08x\n", hr);
         pAudioClient->Release();
+		pAudioClient = nullptr;
         return hr;
     }
 
@@ -158,6 +159,7 @@ HRESULT LoopbackCaptureSetup()
         ShowOutput("IAudioClient::GetMixFormat failed: hr = 0x%08x\n", hr);
         CoTaskMemFree(pwfx);
         pAudioClient->Release();
+		pAudioClient = nullptr;
         return hr;
     }
 
@@ -193,6 +195,7 @@ HRESULT LoopbackCaptureSetup()
                         ShowOutput("Don't know how to coerce mix format to int-16\n");
                         CoTaskMemFree(pwfx);
                         pAudioClient->Release();
+						pAudioClient = nullptr;
                         return E_UNEXPECTED;
                     }
                 }
@@ -202,6 +205,7 @@ HRESULT LoopbackCaptureSetup()
                 ShowOutput("Don't know how to coerce WAVEFORMATEX with wFormatTag = 0x%08x to int-16\n", pwfx->wFormatTag);
                 CoTaskMemFree(pwfx);
                 pAudioClient->Release();
+				pAudioClient = nullptr;
                 return E_UNEXPECTED;
         }
     }
@@ -272,6 +276,7 @@ BYTE *captureData;
 
     // release the audio client
     pAudioClient->Release();
+	pAudioClient = nullptr;
     EXIT_ON_ERROR(hr)
 
 
@@ -296,6 +301,7 @@ BYTE *captureData;
     if (FAILED(hr)) {
         ShowOutput("IAudioClient::Initialize failed: hr = 0x%08x\n", hr);
         pAudioClient->Release();
+		pAudioClient = nullptr;
         return hr;
     }
     CoTaskMemFree(pwfx);
@@ -309,6 +315,7 @@ BYTE *captureData;
     if (FAILED(hr)) {
         ShowOutput("IAudioClient::GetService(IAudioCaptureClient) failed: hr 0x%08x\n", hr);
         pAudioClient->Release();
+		pAudioClient = nullptr;
         return hr;
     }
     
@@ -320,7 +327,9 @@ BYTE *captureData;
         DWORD dwErr = GetLastError();
         ShowOutput("AvSetMmThreadCharacteristics failed: last error = %u\n", dwErr);
         pAudioCaptureClient->Release();
+		pAudioCaptureClient = nullptr;
         pAudioClient->Release();
+		pAudioClient = nullptr;
         return HRESULT_FROM_WIN32(dwErr);
     }    
 
@@ -330,7 +339,9 @@ BYTE *captureData;
         ShowOutput("IAudioClient::Start failed: hr = 0x%08x\n", hr);
         AvRevertMmThreadCharacteristics(hTask);
         pAudioCaptureClient->Release();
+		pAudioCaptureClient = nullptr;
         pAudioClient->Release();
+		pAudioClient = nullptr;
         return hr;
     }
     
@@ -583,11 +594,14 @@ void loopBackRelease() {
     m_hThread = NULL;
 	if (pAudioClient) {
       m_pMMDevice->Release();
-	  pAudioClient->Stop();
-	  //pAudioClient->GetService();
-      pAudioCaptureClient->Release();
+      pAudioClient->Stop();
+      //pAudioClient->GetService();
+      if (pAudioCaptureClient) {
+        pAudioCaptureClient->Release();
+		pAudioCaptureClient = nullptr;
+      }
       pAudioClient->Release();
-
+	  pAudioClient = nullptr;
 	}
     AvRevertMmThreadCharacteristics(hTask);
 

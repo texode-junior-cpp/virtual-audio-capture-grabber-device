@@ -76,7 +76,7 @@ STDMETHODIMP CVCam::GetState(DWORD dw, FILTER_STATE *pState)
 CVCamStream::CVCamStream(HRESULT *phr, CVCam *pParent, LPCWSTR pPinName) :
     CSourceStream(NAME("Virtual cam5"),phr, pParent, pPinName), m_pParent(pParent)
 {
-    // Set the default media type...
+    // Set the media type...
 	GetMediaType(0, &m_mt);
 }
 
@@ -382,7 +382,6 @@ HRESULT STDMETHODCALLTYPE CVCamStream::SetFormat(AM_MEDIA_TYPE *pmt)
     return S_OK;
 }
 
-// set format or "preferred" format if none set.  It's all always the same for us, and was already set to it.
 HRESULT STDMETHODCALLTYPE CVCamStream::GetFormat(AM_MEDIA_TYPE **ppmt)
 {
     *ppmt = CreateMediaType(&m_mt);
